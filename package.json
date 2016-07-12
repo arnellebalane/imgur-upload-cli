@@ -2,7 +2,9 @@
   "name": "imgur-upload-cli",
   "version": "0.0.0",
   "description": "command-line tool to upload images to imgur",
-  "main": "index.js",
+  "bin": {
+    "imgur-upload": "cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,5 +23,11 @@
   "bugs": {
     "url": "https://github.com/arnellebalane/imgur-upload-cli/issues"
   },
-  "homepage": "https://github.com/arnellebalane/imgur-upload-cli#readme"
+  "homepage": "https://github.com/arnellebalane/imgur-upload-cli#readme",
+  "dependencies": {
+    "array-unique": "^0.2.1",
+    "meow": "^3.7.0",
+    "ora": "^0.2.3",
+    "request": "^2.73.0"
+  }
 }
