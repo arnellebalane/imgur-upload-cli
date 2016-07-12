@@ -59,6 +59,12 @@ if (options.command === 'upload' && options.paths.length === 1) {
         spinner.stop();
         console.log(link);
     });
+} else if (options.command === 'upload' && options.paths.length > 1) {
+    spinner.start();
+    uploadAlbum(options.paths, function(link) {
+        spinner.stop();
+        console.log(link);
+    });
 }
 
 
@@ -77,6 +83,28 @@ function uploadImage(image, album, callback) {
     }
     sendApiRequest(data, function(response) {
         callback('http://imgur.com/' + response.data.id);
+    });
+}
+
+
+function uploadAlbum(images, callback) {
+    spinner.text = 'Creating album';
+    var data = {
+        url: 'https://api.imgur.com/3/album',
+        method: 'POST'
+    };
+    sendApiRequest(data, function(response) {
+        var albumid = response.data.deletehash;
+        var index = 0;
+        (function uploadAlbumImage() {
+            if (index < images.length) {
+                var image = images[index++];
+                spinner.text = 'Uploading ' + image;
+                uploadImage(image, albumid, uploadAlbumImage);
+            } else {
+                callback('http://imgur.com/a/' + response.data.id);
+            }
+        })();
     });
 }
 
