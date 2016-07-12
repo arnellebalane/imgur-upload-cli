@@ -24,6 +24,8 @@ var cli = meow([
     '',
     '  Viewing upload history',
     '    imgur-upload history',
+    '  Clear upload history',
+    '    imgur-upload clear',
     '',
     'Options:',
     '  --delete, -d     Delete image file after being uploaded'
@@ -52,6 +54,9 @@ if (cli.input[0] === 'latest') {
 } else if (cli.input[0] === 'history') {
     options.command = 'history';
     delete options.paths;
+} else if (cli.input[0] === 'clear') {
+    options.command = 'clear';
+    delete options.paths;
 }
 
 var spinner = ora();
@@ -76,6 +81,9 @@ if (options.command === 'upload' && options.paths.length === 1) {
     moduleConfig().history.forEach(function(link) {
         console.log(link);
     });
+} else if (options.command === 'clear') {
+    clearUploadHistory();
+    console.log('imgur-upload history cleared');
 } else if (options.command === 'basedir' && options.path) {
     setBaseDir(options.path);
 } else if (options.command === 'basedir' && !options.path) {
@@ -162,6 +170,13 @@ function addUploadHistoryItem(link) {
         config.history = [];
     }
     config.history.push(link);
+    moduleConfig(config);
+}
+
+
+function clearUploadHistory() {
+    var config = moduleConfig();
+    config.history = [];
     moduleConfig(config);
 }
 
