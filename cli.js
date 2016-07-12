@@ -92,6 +92,13 @@ if (options.command === 'upload' && options.paths.length === 1) {
     } catch (e) {
         console.log(e.message);
     }
+} else if (options.command === 'latest' && options.path) {
+    spinner.start();
+    uploadLatestImageInDirectory(options.path, function(link) {
+        spinner.stop();
+        addUploadHistoryItem(link);
+        console.log(link);
+    });
 }
 
 
@@ -136,12 +143,35 @@ function uploadAlbum(images, callback) {
 }
 
 
+function uploadLatestImageInDirectory(directory, callback) {
+    fs.readdir(directory, function(error, files) {
+        var images = files.filter(function(file) {
+            return /\.(jpg|jpeg|png|gif|bmp)$/.test(file);
+        });
+        var latestImage = images.reduce(function(latest, current) {
+            var latestStat = fs.statSync(path.join(directory, latest));
+            var currentStat = fs.statSync(path.join(directory, current));
+            var latestModifiedTime = new Date(latestStat.mtime);
+            var currentModifiedTime = new Date(currentStat.mtime);
+            if (latestModifiedTime.valueOf() > currentModifiedTime.valueOf()) {
+                return latest;
+            }
+            return current;
+        }, images[0]);
+        var latestImagePath = path.join(directory, latestImage);
+
+        spinner.text = 'Uploading ' + latestImagePath;
+        uploadImage(latestImagePath, null, callback);
+    });
+}
+
+
 function sendApiRequest(data, callback) {
     data.headers = data.headers || {};
     data.headers['Authorization'] = 'Client-ID ae51d45d93313f1';
     request(data, function(error, response, body) {
         if (error) {
-            throw error();
+            throw error;
         }
         callback(JSON.parse(body));
     });
