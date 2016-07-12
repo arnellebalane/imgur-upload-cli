@@ -52,6 +52,12 @@ $ imgur-upload latest --delete
 $ imgur-upload latest -d
 ```
 
+View upload history:
+
+```
+$ imgur-upload history
+```
+
 
 ## License
 
