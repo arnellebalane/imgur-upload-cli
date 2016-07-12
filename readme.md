@@ -58,6 +58,12 @@ View upload history:
 $ imgur-upload history
 ```
 
+Clear upload history:
+
+```
+$ imgur-upload clear
+```
+
 
 ## License
 
