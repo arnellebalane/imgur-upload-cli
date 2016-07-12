@@ -1,7 +1,9 @@
 var fs = require('fs');
+var path = require('path');
 var meow = require('meow');
 var unique = require('array-unique');
 var request = require('request');
+var userhome = require('user-home');
 var ora = require('ora');
 
 
@@ -46,7 +48,10 @@ if (cli.input[0] === 'latest') {
 } else if (cli.input[0] === 'basedir') {
     options.command = 'basedir';
     options.path = cli.input[1];
-    delete optoins.paths;
+    delete options.paths;
+} else if (cli.input[0] === 'history') {
+    options.command = 'history';
+    delete options.paths;
 }
 
 var spinner = ora();
@@ -57,12 +62,18 @@ if (options.command === 'upload' && options.paths.length === 1) {
     spinner.text = 'Uploading ' + options.paths[0];
     uploadImage(options.paths[0], null, function(link) {
         spinner.stop();
+        addUploadHistoryItem(link);
         console.log(link);
     });
 } else if (options.command === 'upload' && options.paths.length > 1) {
     spinner.start();
     uploadAlbum(options.paths, function(link) {
         spinner.stop();
+        addUploadHistoryItem(link);
+        console.log(link);
+    });
+} else if (options.command === 'history') {
+    moduleConfig().history.forEach(function(link) {
         console.log(link);
     });
 }
@@ -118,4 +129,36 @@ function sendApiRequest(data, callback) {
         }
         callback(JSON.parse(body));
     });
+}
+
+
+function addUploadHistoryItem(link) {
+    var config = moduleConfig();
+    if (!('history' in config)) {
+        config.history = [];
+    }
+    config.history.push(link);
+    moduleConfig(config);
+}
+
+
+function moduleConfig(config) {
+    var configDirectory = path.join(userhome, '.imgur-upload');
+    try {
+        fs.statSync(configDirectory);
+    } catch (e) {
+        fs.mkdirSync(configDirectory);
+    }
+    var configFile = path.join(configDirectory, 'config.json');
+    try {
+        fs.statSync(configFile);
+    } catch (e) {
+        fs.writeFileSync(configFile, '{}');
+    }
+
+    if (config) {
+        return fs.writeFileSync(configFile, JSON.stringify(config));
+    }
+    var contents = fs.readFileSync(configFile);
+    return JSON.parse(contents);
 }
