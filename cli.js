@@ -76,6 +76,14 @@ if (options.command === 'upload' && options.paths.length === 1) {
     moduleConfig().history.forEach(function(link) {
         console.log(link);
     });
+} else if (options.command === 'basedir' && options.path) {
+    setBaseDir(options.path);
+} else if (options.command === 'basedir' && !options.path) {
+    try {
+        console.log(getBaseDir());
+    } catch (e) {
+        console.log(e.message);
+    }
 }
 
 
@@ -129,6 +137,22 @@ function sendApiRequest(data, callback) {
         }
         callback(JSON.parse(body));
     });
+}
+
+
+function setBaseDir(basedir) {
+    var config = moduleConfig();
+    config.basedir = basedir;
+    moduleConfig(config);
+}
+
+
+function getBaseDir(basedir) {
+    var config = moduleConfig();
+    if (config.basedir) {
+        return config.basedir;
+    }
+    throw new Error('imgur-upload basedir is not yet set');
 }
 
 
