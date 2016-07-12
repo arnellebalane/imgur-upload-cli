@@ -69,6 +69,9 @@ if (options.command === 'upload' && options.paths.length === 1) {
     uploadImage(options.paths[0], null, function(link) {
         spinner.stop();
         addUploadHistoryItem(link);
+        if (options.delete) {
+            deleteImage(options.paths[0]);
+        }
         console.log(link);
     });
 } else if (options.command === 'upload' && options.paths.length > 1) {
@@ -150,7 +153,12 @@ function uploadAlbum(images, callback) {
             if (index < images.length) {
                 var image = images[index++];
                 spinner.text = 'Uploading ' + image;
-                uploadImage(image, albumid, uploadAlbumImage);
+                uploadImage(image, albumid, function() {
+                    if (options.delete) {
+                        deleteImage(image);
+                    }
+                    uploadAlbumImage();
+                });
             } else {
                 callback('http://imgur.com/a/' + response.data.id);
             }
@@ -177,7 +185,12 @@ function uploadLatestImageInDirectory(directory, callback) {
         var latestImagePath = path.join(directory, latestImage);
 
         spinner.text = 'Uploading ' + latestImagePath;
-        uploadImage(latestImagePath, null, callback);
+        uploadImage(latestImagePath, null, function(link) {
+            if (options.delete) {
+                deleteImage(latestImagePath);
+            }
+            callback(link);
+        });
     });
 }
 
@@ -191,6 +204,11 @@ function sendApiRequest(data, callback) {
         }
         callback(JSON.parse(body));
     });
+}
+
+
+function deleteImage(image) {
+    fs.unlinkSync(image);
 }
 
 
