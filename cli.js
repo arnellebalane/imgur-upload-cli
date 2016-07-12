@@ -79,9 +79,12 @@ if (options.command === 'upload' && options.paths.length === 1) {
         console.log(link);
     });
 } else if (options.command === 'history') {
-    moduleConfig().history.forEach(function(link) {
-        console.log(link);
-    });
+    var history = moduleConfig().history;
+    if (history) {
+        history.forEach(function(link) {
+            console.log(link);
+        });
+    }
 } else if (options.command === 'clear') {
     clearUploadHistory();
     console.log('imgur-upload history cleared');
