@@ -1,0 +1,25 @@
+{
+  "name": "imgur-upload-cli",
+  "version": "0.0.0",
+  "description": "command-line tool to upload images to imgur",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "imgur",
+    "upload",
+    "cli",
+    "images"
+  ],
+  "author": "Arnelle Balane <arnellebalane@gmail.com> (arnellebalane.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arnellebalane/imgur-upload-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arnellebalane/imgur-upload-cli/issues"
+  },
+  "homepage": "https://github.com/arnellebalane/imgur-upload-cli#readme"
+}
