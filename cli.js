@@ -99,6 +99,18 @@ if (options.command === 'upload' && options.paths.length === 1) {
         addUploadHistoryItem(link);
         console.log(link);
     });
+} else if (options.command === 'latest' && !options.path) {
+    try {
+        spinner.start();
+        var basedir = getBaseDir();
+        uploadLatestImageInDirectory(basedir, function(link) {
+            spinner.stop();
+            addUploadHistoryItem(link);
+            console.log(link);
+        });
+    } catch (e) {
+        console.log(e.message);
+    }
 }
 
 
