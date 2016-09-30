@@ -5,7 +5,7 @@ const meow = require('meow');
 const unique = require('array-unique');
 const request = require('request');
 const userhome = require('user-home');
-const ora = require('ora');
+const spinner = require('ora')();
 
 
 const cli = meow([`
@@ -40,80 +40,104 @@ const cli = meow([`
 });
 
 
-const options = {
-    delete: cli.flags.delete,
-    command: 'upload',
-    paths: unique(cli.input)
-};
 
+/** normalize command and parameter values **/
 
-if (cli.input[0] === 'latest') {
-    options.command = 'latest';
-    options.path = cli.input[1];
-    delete options.paths;
-} else if (cli.input[0] === 'basedir') {
-    options.command = 'basedir';
-    options.path = cli.input[1];
-    delete options.paths;
-} else if (cli.input[0] === 'history') {
-    options.command = 'history';
-    delete options.paths;
-} else if (cli.input[0] === 'clear') {
-    options.command = 'clear';
-    delete options.paths;
+switch (cli.input[0]) {
+    case 'latest':
+    case 'basedir':
+        var command = cli.input[0];
+        var parameter = cli.input[1];
+        break;
+
+    case 'history':
+    case 'clear':
+        var command = cli.input[0];
+        break;
+
+    default:
+        var command = 'upload';
+        var parameters = unique(cli.input);
 }
 
+const flags = cli.flags;
 
-const spinner = ora();
 
 
-if (options.command === 'upload' && options.paths.length === 1) {
+/** execute commands **/
+
+if (command === 'upload' && parameters.length === 1) {
     spinner.start();
-    spinner.text = 'Uploading ' + options.paths[0];
-    uploadImage(options.paths[0], null, function(link) {
+    spinner.text = `Uploading ${parameters[0]}`;
+
+    uploadImage(parameters[0], null, function(link) {
         spinner.stop();
         addUploadHistoryItem(link);
-        if (options.delete) {
-            deleteImage(options.paths[0]);
+        if (flags.delete) {
+            deleteImage(parameters[0]);
         }
         console.log(link);
     });
-} else if (options.command === 'upload' && options.paths.length > 1) {
+}
+
+
+else if (command === 'upload' && parameters.length > 1) {
     spinner.start();
-    uploadAlbum(options.paths, function(link) {
+
+    uploadAlbum(parameters, function(link) {
         spinner.stop();
         addUploadHistoryItem(link);
         console.log(link);
     });
-} else if (options.command === 'history') {
+}
+
+
+else if (command === 'history') {
     const history = moduleConfig().history;
     if (history) {
         history.forEach(function(link) {
             console.log(link);
         });
     }
-} else if (options.command === 'clear') {
+}
+
+
+else if (command === 'clear') {
     clearUploadHistory();
     console.log('imgur-upload history cleared');
-} else if (options.command === 'basedir' && options.path) {
-    setBaseDir(options.path);
-} else if (options.command === 'basedir' && !options.path) {
+}
+
+
+else if (command === 'basedir' && parameter) {
+    setBaseDir(parameter);
+}
+
+
+else if (command === 'basedir' && !parameter) {
     try {
         console.log(getBaseDir());
     } catch (e) {
         console.log(e.message);
     }
-} else if (options.command === 'latest' && options.path) {
+}
+
+
+else if (command === 'latest' && parameter) {
     spinner.start();
-    uploadLatestImageInDirectory(options.path, function(link) {
+
+    uploadLatestImageInDirectory(parameter, function(link) {
         spinner.stop();
         addUploadHistoryItem(link);
         console.log(link);
     });
-} else if (options.command === 'latest' && !options.path) {
+}
+
+
+else if (command === 'latest' && !parameter) {
     try {
-        spinner.start();
         const basedir = getBaseDir();
+        spinner.start();
+
         uploadLatestImageInDirectory(basedir, function(link) {
             spinner.stop();
             addUploadHistoryItem(link);
@@ -158,7 +182,7 @@ function uploadAlbum(images, callback) {
                 const image = images[index++];
                 spinner.text = `Uploading ${image}`;
                 uploadImage(image, albumid, function() {
-                    if (options.delete) {
+                    if (flags.delete) {
                         deleteImage(image);
                     }
                     uploadAlbumImage();
@@ -190,7 +214,7 @@ function uploadLatestImageInDirectory(directory, callback) {
 
         spinner.text = `Uploading ${latestImagePath}`;
         uploadImage(latestImagePath, null, function(link) {
-            if (options.delete) {
+            if (flags.delete) {
                 deleteImage(latestImagePath);
             }
             callback(link);
