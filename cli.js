@@ -1,36 +1,38 @@
 #!/usr/bin/env node
-var fs = require('fs');
-var path = require('path');
-var meow = require('meow');
-var unique = require('array-unique');
-var request = require('request');
-var userhome = require('user-home');
-var ora = require('ora');
+const fs = require('fs');
+const path = require('path');
+const meow = require('meow');
+const unique = require('array-unique');
+const request = require('request');
+const userhome = require('user-home');
+const ora = require('ora');
 
 
-var cli = meow([
-    'Usage:',
-    '',
-    '  Uploading images',
-    '    imgur-upload path/to/image.jpg',
-    '    imgur-upload path/to/image-one.jpg path/to/image-two.jpg',
-    '    imgur-upload path/to/*.jpg',
-    '',
-    '  Uploading latest image in a directory',
-    '    imgur-upload latest path/to/directory',
-    '',
-    '  Setting default image source directory',
-    '    imgur-upload basedir path/to/directory',
-    '    imgur-upload latest',
-    '',
-    '  Viewing upload history',
-    '    imgur-upload history',
-    '  Clear upload history',
-    '    imgur-upload clear',
-    '',
-    'Options:',
-    '  --delete, -d     Delete image file after being uploaded'
-], {
+const cli = meow([`
+    Usage:
+
+      Uploading images
+        imgur-upload path/to/image.jpg
+        imgur-upload path/to/image-one.jpg path/to/image-two.jpg
+        imgur-upload path/to/*.jpg
+
+      Uploading latest image in a directory
+        imgur-upload latest path/to/directory
+
+      Setting default image in a directory
+        imgur-upload basedir path/to/directory
+        imgur-upload latest
+
+      Viewing upload history
+        imgur-upload history
+
+      Clear upload history
+        imgur-upload clear
+
+    Options:
+
+      --delete, -d     Delete image file after being uploaded
+`], {
     alias: {
         'd': 'delete'
     },
@@ -38,11 +40,12 @@ var cli = meow([
 });
 
 
-var options = {
+const options = {
     delete: cli.flags.delete,
     command: 'upload',
     paths: unique(cli.input)
 };
+
 
 if (cli.input[0] === 'latest') {
     options.command = 'latest';
@@ -60,7 +63,8 @@ if (cli.input[0] === 'latest') {
     delete options.paths;
 }
 
-var spinner = ora();
+
+const spinner = ora();
 
 
 if (options.command === 'upload' && options.paths.length === 1) {
@@ -82,7 +86,7 @@ if (options.command === 'upload' && options.paths.length === 1) {
         console.log(link);
     });
 } else if (options.command === 'history') {
-    var history = moduleConfig().history;
+    const history = moduleConfig().history;
     if (history) {
         history.forEach(function(link) {
             console.log(link);
@@ -109,7 +113,7 @@ if (options.command === 'upload' && options.paths.length === 1) {
 } else if (options.command === 'latest' && !options.path) {
     try {
         spinner.start();
-        var basedir = getBaseDir();
+        const basedir = getBaseDir();
         uploadLatestImageInDirectory(basedir, function(link) {
             spinner.stop();
             addUploadHistoryItem(link);
@@ -124,7 +128,7 @@ if (options.command === 'upload' && options.paths.length === 1) {
 
 
 function uploadImage(image, album, callback) {
-    var data = {
+    const data = {
         url: 'https://api.imgur.com/3/image',
         method: 'POST',
         formData: {
@@ -135,24 +139,24 @@ function uploadImage(image, album, callback) {
         data.formData.album = album;
     }
     sendApiRequest(data, function(response) {
-        callback('http://imgur.com/' + response.data.id);
+        callback(`http://imgur.com/${response.data.id}`);
     });
 }
 
 
 function uploadAlbum(images, callback) {
     spinner.text = 'Creating album';
-    var data = {
+    const data = {
         url: 'https://api.imgur.com/3/album',
         method: 'POST'
     };
     sendApiRequest(data, function(response) {
-        var albumid = response.data.deletehash;
-        var index = 0;
+        const albumid = response.data.deletehash;
+        let index = 0;
         (function uploadAlbumImage() {
             if (index < images.length) {
-                var image = images[index++];
-                spinner.text = 'Uploading ' + image;
+                const image = images[index++];
+                spinner.text = `Uploading ${image}`;
                 uploadImage(image, albumid, function() {
                     if (options.delete) {
                         deleteImage(image);
@@ -160,7 +164,7 @@ function uploadAlbum(images, callback) {
                     uploadAlbumImage();
                 });
             } else {
-                callback('http://imgur.com/a/' + response.data.id);
+                callback(`http://imgur.com/a/${response.data.id}`);
             }
         })();
     });
@@ -169,22 +173,22 @@ function uploadAlbum(images, callback) {
 
 function uploadLatestImageInDirectory(directory, callback) {
     fs.readdir(directory, function(error, files) {
-        var images = files.filter(function(file) {
+        const images = files.filter(function(file) {
             return /\.(jpg|jpeg|png|gif|bmp)$/.test(file);
         });
-        var latestImage = images.reduce(function(latest, current) {
-            var latestStat = fs.statSync(path.join(directory, latest));
-            var currentStat = fs.statSync(path.join(directory, current));
-            var latestModifiedTime = new Date(latestStat.mtime);
-            var currentModifiedTime = new Date(currentStat.mtime);
+        const latestImage = images.reduce(function(latest, current) {
+            const latestStat = fs.statSync(path.join(directory, latest));
+            const currentStat = fs.statSync(path.join(directory, current));
+            const latestModifiedTime = new Date(latestStat.mtime);
+            const currentModifiedTime = new Date(currentStat.mtime);
             if (latestModifiedTime.valueOf() > currentModifiedTime.valueOf()) {
                 return latest;
             }
             return current;
         }, images[0]);
-        var latestImagePath = path.join(directory, latestImage);
+        const latestImagePath = path.join(directory, latestImage);
 
-        spinner.text = 'Uploading ' + latestImagePath;
+        spinner.text = `Uploading ${latestImagePath}`;
         uploadImage(latestImagePath, null, function(link) {
             if (options.delete) {
                 deleteImage(latestImagePath);
@@ -213,14 +217,14 @@ function deleteImage(image) {
 
 
 function setBaseDir(basedir) {
-    var config = moduleConfig();
+    const config = moduleConfig();
     config.basedir = basedir;
     moduleConfig(config);
 }
 
 
 function getBaseDir(basedir) {
-    var config = moduleConfig();
+    const config = moduleConfig();
     if (config.basedir) {
         return config.basedir;
     }
@@ -229,7 +233,7 @@ function getBaseDir(basedir) {
 
 
 function addUploadHistoryItem(link) {
-    var config = moduleConfig();
+    const config = moduleConfig();
     if (!('history' in config)) {
         config.history = [];
     }
@@ -239,20 +243,20 @@ function addUploadHistoryItem(link) {
 
 
 function clearUploadHistory() {
-    var config = moduleConfig();
+    const config = moduleConfig();
     config.history = [];
     moduleConfig(config);
 }
 
 
 function moduleConfig(config) {
-    var configDirectory = path.join(userhome, '.imgur-upload');
+    const configDirectory = path.join(userhome, '.imgur-upload');
     try {
         fs.statSync(configDirectory);
     } catch (e) {
         fs.mkdirSync(configDirectory);
     }
-    var configFile = path.join(configDirectory, 'config.json');
+    const configFile = path.join(configDirectory, 'config.json');
     try {
         fs.statSync(configFile);
     } catch (e) {
@@ -262,6 +266,6 @@ function moduleConfig(config) {
     if (config) {
         return fs.writeFileSync(configFile, JSON.stringify(config));
     }
-    var contents = fs.readFileSync(configFile);
+    const contents = fs.readFileSync(configFile);
     return JSON.parse(contents);
 }
