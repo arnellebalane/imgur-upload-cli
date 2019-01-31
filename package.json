@@ -6,6 +6,7 @@
     "imgur-upload": "cli.js"
   },
   "scripts": {
+    "build": "babel --out-dir dist source",
     "lint": "eslint 'source/*.js'"
   },
   "keywords": [
