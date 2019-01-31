@@ -23,8 +23,13 @@ export async function uploadImage(imagePath, album=null) {
     return axios.post(config.API_IMAGE_URL, data);
 }
 
-export function uploadAlbum(imagePaths) {
+export async function uploadAlbum(imagePaths) {
+    const album = await axios.post(config.API_ALBUM_URL);
+    const albumID = album.deletehash;
 
+    return Promise.all(imagePaths.map(
+        imagePath => uploadImage(imagePath, albumID)
+    ));
 }
 
 export function displayHistory() {
