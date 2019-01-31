@@ -29,7 +29,6 @@
     "@babel/polyfill": "7.2.5",
     "array-unique": "0.3.2",
     "axios": "0.18.0",
-    "form-data": "2.3.3",
     "meow": "5.0.0",
     "ora": "3.0.0",
     "user-home": "^2.0.0"
