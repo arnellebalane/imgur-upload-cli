@@ -27,8 +27,8 @@
   "dependencies": {
     "array-unique": "0.3.2",
     "meow": "5.0.0",
+    "node-fetch": "2.3.0",
     "ora": "3.0.0",
-    "request": "^2.73.0",
     "user-home": "^2.0.0"
   },
   "devDependencies": {
