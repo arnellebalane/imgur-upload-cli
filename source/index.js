@@ -1,9 +1,26 @@
+import '@babel/polyfill';
 import fs from 'fs';
-import path from 'path';
-import fetch from 'fetch';
+import util from 'util';
+import config from './config';
+import axios from './axios';
 
-export function uploadImage(imagePath) {
+const readFile = util.promisify(fs.readFile);
 
+function base64File(filePath) {
+    return readFile(filePath)
+        .then(buffer => buffer.toString('base64'));
+}
+
+export async function uploadImage(imagePath, album=null) {
+    const data = {
+        image: await base64File(imagePath)
+    };
+
+    if (album) {
+        data.album = album;
+    }
+
+    return axios.post(config.API_IMAGE_URL, data);
 }
 
 export function uploadAlbum(imagePaths) {
