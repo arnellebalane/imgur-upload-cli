@@ -25,9 +25,9 @@
   },
   "homepage": "https://github.com/arnellebalane/imgur-upload-cli#readme",
   "dependencies": {
-    "array-unique": "^0.2.1",
-    "meow": "^3.7.0",
-    "ora": "^0.2.3",
+    "array-unique": "0.3.2",
+    "meow": "5.0.0",
+    "ora": "3.0.0",
     "request": "^2.73.0",
     "user-home": "^2.0.0"
   }
