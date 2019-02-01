@@ -14,7 +14,8 @@ class ModuleConfig {
     _readConfig() {
         return readFile(this.configPath)
             .then(buffer => buffer.toString('ascii'))
-            .then(contents => JSON.parse(contents));
+            .then(contents => JSON.parse(contents))
+            .catch(() => ({}));
     }
 
     _writeConfig(contents) {
