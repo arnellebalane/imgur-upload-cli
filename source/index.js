@@ -1,7 +1,7 @@
 import '@babel/polyfill';
 import config from './config';
 import axios from './axios';
-import {base64File} from './utils';
+import {base64File, moduleConfig} from './utils';
 
 export async function uploadImage(imagePath, album=null) {
     const data = {
@@ -24,8 +24,17 @@ export async function uploadAlbum(imagePaths) {
     ));
 }
 
-export function displayHistory() {
+export function getHistory() {
+    return moduleConfig.get('history', []);
+}
 
+export function addHistory(imagePath, data) {
+    return moduleConfig.append('history', {
+        id: data.id,
+        path: imagePath,
+        link: data.link,
+        deletehash: data.deletehash
+    });
 }
 
 export function clearHistory() {
