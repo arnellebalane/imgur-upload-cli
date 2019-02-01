@@ -42,11 +42,11 @@ export function clearHistory() {
 }
 
 export function setBaseDirectory(baseDirPath) {
-
+    return moduleConfig.set('baseDir', baseDirPath);
 }
 
 export function getBaseDirectory() {
-
+    return moduleConfig.get('baseDir', null);
 }
 
 export function uploadLatest(dirPath) {
