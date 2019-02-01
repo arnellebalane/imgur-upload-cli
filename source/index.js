@@ -38,7 +38,7 @@ export function addHistory(imagePath, data) {
 }
 
 export function clearHistory() {
-
+    return moduleConfig.set('history', []);
 }
 
 export function setBaseDirectory(baseDirPath) {
