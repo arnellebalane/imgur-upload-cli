@@ -25,9 +25,9 @@ class ModuleConfig {
         );
     }
 
-    async get(key) {
+    async get(key, defaultValue=null) {
         const contents = await this._readConfig();
-        return contents[key];
+        return key in contents ? contents[key] : defaultValue;
     }
 
     async set(key, value) {
