@@ -38,6 +38,9 @@ class ModuleConfig {
 
     async append(key, ...values) {
         const contents = await this._readConfig();
+        if (!(key in contents)) {
+            contents[key] = [];
+        }
         contents[key].push(...values);
         return this._writeConfig(contents);
     }
