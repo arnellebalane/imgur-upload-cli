@@ -27,13 +27,33 @@ const cli = meow(`
 `);
 
 
+const spinner = ora();
+
+
 // Map commands to api methods
 const commands = {
     async upload(imagePaths) {
-        const result = imagePaths.length > 1
-            ? await api.uploadAlbum(imagePaths)
-            : await api.uploadImage(imagePaths[0]);
-        console.log(result);
+        if (imagePaths.length > 1) {
+            spinner.text = 'Uploading images to an album';
+            spinner.start();
+
+            const result = await api.uploadAlbum(imagePaths);
+            spinner.stop();
+
+            console.log(`Album URL: http://imgur.com/a/${result.id}`);
+            console.log('Image URLs:');
+            imagePaths.map((imagePath, i) => {
+                console.log(`  ${imagePath} => ${result.images[i].link}`);
+            });
+        } else {
+            spinner.text = `Uploading ${imagePaths[0]}`;
+            spinner.start();
+
+            const result = await api.uploadImage(imagePaths[0]);
+            spinner.stop();
+
+            console.log(result.link);
+        }
     },
 
     async basedir(dirPath) {
