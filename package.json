@@ -2,12 +2,14 @@
   "name": "imgur-upload-cli",
   "version": "0.2.0",
   "description": "command-line tool to upload images to imgur",
+  "main": "dist/index.js",
   "bin": {
-    "imgur-upload": "cli.js"
+    "imgur-upload": "dist/cli.js"
   },
   "scripts": {
     "build": "babel --out-dir dist source",
-    "lint": "eslint 'source/*.js'"
+    "lint": "eslint 'source/*.js'",
+    "prepublish": "npm run build"
   },
   "keywords": [
     "imgur",
