@@ -33,9 +33,11 @@ async function uploadAlbum(imagePaths) {
     const album = await axios.post(config.API_ALBUM_URL);
     const albumID = album.deletehash;
 
-    return Promise.all(imagePaths.map(
+    const images = await Promise.all(imagePaths.map(
         imagePath => uploadImage(imagePath, albumID)
     ));
+
+    return {...album, images};
 }
 
 function getHistory() {
