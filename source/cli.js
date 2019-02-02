@@ -81,13 +81,25 @@ const commands = {
     },
 
     async history() {
+        spinner.text = 'Getting upload history';
+        spinner.start();
+
         const result = await api.getHistory();
-        console.log(result);
+        spinner.stop();
+
+        result.forEach(({deletehash, link}) => {
+            console.log(`${deletehash}: ${link}`);
+        });
     },
 
     async clear() {
-        const result = await api.clearHistory();
-        console.log(result);
+        spinner.text = 'Clearning upload history';
+        spinner.start();
+
+        await api.clearHistory();
+        spinner.stop();
+
+        console.log('Upload history cleared.');
     }
 };
 
