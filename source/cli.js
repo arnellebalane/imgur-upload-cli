@@ -56,11 +56,28 @@ const commands = {
         }
     },
 
-    async basedir(dirPath) {
-        const result = dirPath
-            ? await api.setBaseDirectory(dirPath)
-            : await api.getBaseDirectory(dirPath);
-        console.log(result);
+    async basedir([dirPath]) {
+        if (dirPath) {
+            spinner.text = 'Setting base directory';
+            spinner.start();
+
+            await api.setBaseDirectory(dirPath);
+            spinner.stop();
+
+            console.log(`Base directory now set to ${dirPath}`);
+        } else {
+            spinner.text = 'Getting base directory';
+            spinner.start();
+
+            const result = await api.getBaseDirectory();
+            spinner.stop();
+
+            if (result) {
+                console.log(result);
+            } else {
+                console.log('Base directory is currently not set.');
+            }
+        }
     },
 
     async history() {
