@@ -2,6 +2,7 @@ import '@babel/polyfill';
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
+import trash from 'trash';
 import config from './config';
 import axios from './axios';
 import {
@@ -11,7 +12,6 @@ import {
 
 const readDir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
-const unlink = util.promisify(fs.unlink);
 
 async function uploadImage(imagePath, album=null) {
     const data = {
@@ -42,7 +42,7 @@ async function uploadAlbum(imagePaths) {
 }
 
 function deleteImages(imagePaths) {
-    return Promise.all(imagePaths.map(imagePath => unlink(imagePath)));
+    return trash(imagePaths);
 }
 
 function getHistory() {
