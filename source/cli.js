@@ -26,6 +26,13 @@ const cli = meow(`
 
     ${chalk.dim.underline('Clear upload history:')}
       ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('clear')}
+
+    ${chalk.dim.underline('Remove uploaded image by deletehash:')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('remove')} ${chalk.yellow('thedeletehash')}
+        ${chalk.dim('(the deletehash can be obtained from the history command)')}
+
+    ${chalk.dim.underline('Available options:')}
+      ${chalk.yellow('-d, --delete')}\t${chalk.dim('Delete local image files after they get uploaded')}
 `, {
     flags: {
         delete: {
@@ -118,6 +125,22 @@ const commands = {
         spinner.stop();
 
         console.log(chalk.green('Upload history cleared.'));
+    },
+
+    async remove(deleteHashes) {
+        spinner.text = chalk.blue('Removing specified images');
+        spinner.start();
+
+        const result = await Promise.all(deleteHashes.map(api.removeImage));
+        spinner.stop();
+
+        const successful = result.filter(Boolean).length;
+        const failed = result - successful;
+
+        console.log(chalk.green(`Successfully removed ${successful} ${successful === 1 ? 'image' : 'images'}`));
+        if (failed > 0) {
+            console.log(chalk.red(`Failed to remove ${failed} ${failed === 1 ? 'image' : 'images'}`));
+        }
     }
 };
 
@@ -125,7 +148,7 @@ const commands = {
 // Normalize commands and inputs
 let [command, ...inputs] = cli.input;
 
-if (!['basedir', 'history', 'clear'].includes(command)) {
+if (!['basedir', 'history', 'clear', 'remove'].includes(command)) {
     inputs = [command, ...inputs];
     command = 'upload';
 }

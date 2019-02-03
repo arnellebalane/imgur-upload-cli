@@ -37,6 +37,13 @@ $ imgur-upload --help
 
   Clear upload history:
     $ imgur-upload clear
+
+  Remove uploaded image by deletehash:
+    $ imgur-upload remove thedeletehash
+      (the deletehash can be obtained from the history command)
+
+  Available options:
+    -d, --delete    Delete local image files after they get uploaded
 ```
 
 
