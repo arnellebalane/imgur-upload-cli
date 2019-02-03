@@ -1,7 +1,7 @@
 {
   "name": "imgur-upload-cli",
   "version": "0.2.0",
-  "description": "command-line tool to upload images to imgur",
+  "description": "Upload images to imgur from the command line",
   "main": "dist/index.js",
   "bin": {
     "imgur-upload": "dist/cli.js"

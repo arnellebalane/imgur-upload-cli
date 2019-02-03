@@ -1,30 +1,33 @@
 #!/usr/bin/env node
 import meow from 'meow';
 import ora from 'ora';
+import chalk from 'chalk';
 import api from '.';
 
+/* eslint-disable max-len */
 const cli = meow(`
-    Upload images:
-      $ imgur-upload path/to/image.jpg
-      $ imgur-upload path/to/image-one.jpg path/to/image-two.jpg
-      $ imgur-upload path/to/*.jpg
+    ${chalk.dim.underline('Upload images:')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.yellow('path/to/image.jpg')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.yellow('path/to/image-one.jpg path/to/image-two.jpg')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.yellow('path/to/*.jpg')}
 
-    Upload latest image in a directory:
-      $ imgur-upload latest path/to/directory
-        (if directory is not passed, defaults to the base directory)
+    ${chalk.dim.underline('Upload latest image in a directory:')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('latest')} ${chalk.yellow('path/to/directory')}
+        ${chalk.dim('(if directory is not passed, defaults to the base directory)')}
 
-    Get base directory:
-      $ imgur-upload basedir
+    ${chalk.dim.underline('Get base directory:')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('basedir')}
 
-    Set base directory:
-      $ imgur-upload basedir path/to/base-directory
+    ${chalk.dim.underline('Set base directory:')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('basedir')} ${chalk.yellow('path/to/base-directory')}
 
-    View upload history:
-      $ imgur-upload history
+    ${chalk.dim.underline('View upload history:')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('history')}
 
-    Clear upload history:
-      $ imgur-upload clear
+    ${chalk.dim.underline('Clear upload history:')}
+      ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('clear')}
 `);
+/* eslint-enable max-len */
 
 
 const spinner = ora();
@@ -34,72 +37,72 @@ const spinner = ora();
 const commands = {
     async upload(imagePaths) {
         if (imagePaths.length > 1) {
-            spinner.text = 'Uploading images to an album';
+            spinner.text = chalk.blue('Uploading images to an album');
             spinner.start();
 
             const result = await api.uploadAlbum(imagePaths);
             spinner.stop();
 
-            console.log(`Album URL: http://imgur.com/a/${result.id}`);
-            console.log('Image URLs:');
-            imagePaths.map((imagePath, i) => {
-                console.log(`  ${imagePath} => ${result.images[i].link}`);
+            console.log(chalk.dim('Album URL:'), chalk.green(`http://imgur.com/a/${result.id}`));
+            console.log(chalk.dim('Image URLs:'));
+            imagePaths.forEach((imagePath, i) => {
+                console.log(`  ${chalk.yellow(imagePath)} ${chalk.dim('=>')} ${chalk.green(result.images[i].link)}`);
             });
         } else {
-            spinner.text = `Uploading ${imagePaths[0]}`;
+            spinner.text = chalk.blue(`Uploading ${imagePaths[0]}`);
             spinner.start();
 
             const result = await api.uploadImage(imagePaths[0]);
             spinner.stop();
 
-            console.log(result.link);
+            console.log(chalk.green(result.link));
         }
     },
 
     async basedir([dirPath]) {
         if (dirPath) {
-            spinner.text = 'Setting base directory';
+            spinner.text = chalk.blue('Setting base directory');
             spinner.start();
 
             await api.setBaseDirectory(dirPath);
             spinner.stop();
 
-            console.log(`Base directory now set to ${dirPath}`);
+            console.log(chalk.green('Base directory now set to'), chalk.yellow(dirPath));
         } else {
-            spinner.text = 'Getting base directory';
+            spinner.text = chalk.blue('Getting base directory');
             spinner.start();
 
             const result = await api.getBaseDirectory();
             spinner.stop();
 
             if (result) {
-                console.log(result);
+                console.log(chalk.yellow(result));
             } else {
-                console.log('Base directory is currently not set.');
+                console.log(chalk.red('Base directory is currently not set.'));
             }
         }
     },
 
     async history() {
-        spinner.text = 'Getting upload history';
+        spinner.text = chalk.blue('Getting upload history');
         spinner.start();
 
         const result = await api.getHistory();
         spinner.stop();
 
         result.forEach(({deletehash, link}) => {
-            console.log(`${deletehash}: ${link}`);
+            console.log(`${chalk.yellow(deletehash)}${chalk.dim(':')} ${chalk.green(link)}`);
         });
     },
 
     async clear() {
-        spinner.text = 'Clearning upload history';
+        spinner.text = chalk.blue('Clearing upload history');
         spinner.start();
 
         await api.clearHistory();
         spinner.stop();
 
-        console.log('Upload history cleared.');
+        console.log(chalk.green('Upload history cleared.'));
     }
 };
 
