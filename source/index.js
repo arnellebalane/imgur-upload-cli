@@ -45,6 +45,10 @@ function deleteImages(imagePaths) {
     return trash(imagePaths);
 }
 
+function removeImage(deleteHash) {
+    return axios.delete(`${config.API_IMAGE_URL}/${deleteHash}`);
+}
+
 function getHistory() {
     return moduleConfig.get('history', []);
 }
@@ -110,6 +114,7 @@ export default {
     uploadImage,
     uploadAlbum,
     deleteImages,
+    removeImage,
     getHistory,
     clearHistory,
     setBaseDirectory,
