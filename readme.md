@@ -1,67 +1,42 @@
 # imgur-upload-cli
 
-
-Upload images to [imgur.com][1] from your command line.
+Upload images to [imgur.com][1] from the command line.
 
 
 ## Installation
 
-```
+```bash
 $ npm install -g imgur-upload-cli
 ```
 
 
 ## Usage
 
-Uploading a single image:
+```bash
+$ imgur-upload --help
 
-```
-$ imgur-upload path/to/image.jpg
-```
+  Upload images to imgur from the command line
 
-Uploading multiple images:
+  Upload images:
+    $ imgur-upload path/to/image.jpg
+    $ imgur-upload path/to/image-one.jpg path/to/image-two.jpg
+    $ imgur-upload path/to/*.jpg
 
-```
-$ imgur-upload path/to/image-one.jpg path/to/image-two.jpg
-```
+  Upload latest image in a directory:
+    $ imgur-upload latest path/to/directory
+      (if directory is not passed, defaults to the base directory)
 
-Uploading multiple images with globbing:
+  Get base directory:
+    $ imgur-upload basedir
 
-```
-$ imgur-upload path/to/*.jpg
-```
+  Set base directory:
+    $ imgur-upload basedir path/to/base-directory
 
-Uploading latest image in a directory:
+  View upload history:
+    $ imgur-upload history
 
-```
-$ imgur-upload latest path/to/directory
-```
-
-Specifying default base directory:
-
-```
-$ imgur-upload basedir path/to/directory
-$ imgur-upload latest
-# will upload the latest image in path/to/directory
-```
-
-Deleting local copy of uploaded file (works for all upload commands above):
-
-```
-$ imgur-upload latest --delete
-$ imgur-upload latest -d
-```
-
-View upload history:
-
-```
-$ imgur-upload history
-```
-
-Clear upload history:
-
-```
-$ imgur-upload clear
+  Clear upload history:
+    $ imgur-upload clear
 ```
 
 
