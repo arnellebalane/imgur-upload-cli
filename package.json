@@ -1,12 +1,15 @@
 {
   "name": "imgur-upload-cli",
   "version": "0.2.0",
-  "description": "command-line tool to upload images to imgur",
+  "description": "Upload images to imgur from the command line",
+  "main": "dist/index.js",
   "bin": {
-    "imgur-upload": "cli.js"
+    "imgur-upload": "dist/cli.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel --out-dir dist source",
+    "lint": "eslint 'source/*.js'",
+    "prepublish": "npm run build"
   },
   "keywords": [
     "imgur",
@@ -25,10 +28,21 @@
   },
   "homepage": "https://github.com/arnellebalane/imgur-upload-cli#readme",
   "dependencies": {
-    "array-unique": "^0.2.1",
-    "meow": "^3.7.0",
-    "ora": "^0.2.3",
-    "request": "^2.73.0",
+    "@babel/polyfill": "7.2.5",
+    "array-unique": "0.3.2",
+    "axios": "0.18.0",
+    "chalk": "2.4.2",
+    "meow": "5.0.0",
+    "ora": "3.0.0",
+    "trash": "4.3.0",
     "user-home": "^2.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.2.3",
+    "@babel/core": "7.2.2",
+    "@babel/preset-env": "7.3.1",
+    "babel-eslint": "10.0.1",
+    "eslint": "5.12.1",
+    "eslint-config-arnellebalane": "5.0.0"
   }
 }
