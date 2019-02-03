@@ -11,6 +11,7 @@ import {
 
 const readDir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
+const unlink = util.promisify(fs.unlink);
 
 async function uploadImage(imagePath, album=null) {
     const data = {
@@ -38,6 +39,10 @@ async function uploadAlbum(imagePaths) {
     ));
 
     return {...album, images};
+}
+
+function deleteImages(imagePaths) {
+    return Promise.all(imagePaths.map(imagePath => unlink(imagePath)));
 }
 
 function getHistory() {
@@ -104,6 +109,7 @@ async function uploadLatestImage(dirPath) {
 export default {
     uploadImage,
     uploadAlbum,
+    deleteImages,
     getHistory,
     clearHistory,
     setBaseDirectory,

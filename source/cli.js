@@ -26,7 +26,14 @@ const cli = meow(`
 
     ${chalk.dim.underline('Clear upload history:')}
       ${chalk.dim('$')} ${chalk.green('imgur-upload')} ${chalk.blue('clear')}
-`);
+`, {
+    flags: {
+        delete: {
+            type: 'boolean',
+            alias: 'd'
+        }
+    }
+});
 /* eslint-enable max-len */
 
 
@@ -35,7 +42,7 @@ const spinner = ora();
 
 // Map commands to api methods
 const commands = {
-    async upload(imagePaths) {
+    async upload(imagePaths, flags) {
         if (imagePaths.length > 1) {
             spinner.text = chalk.blue('Uploading images to an album');
             spinner.start();
@@ -56,6 +63,14 @@ const commands = {
             spinner.stop();
 
             console.log(chalk.green(result.link));
+        }
+
+        if (flags.delete) {
+            spinner.text = chalk.blue('Deleting input images');
+            spinner.start();
+
+            await api.deleteImages(imagePaths);
+            spinner.stop();
         }
     },
 
@@ -118,7 +133,7 @@ if (!['basedir', 'history', 'clear'].includes(command)) {
 // Execute commands
 (async () => {
     if (typeof commands[command] === 'function') {
-        await commands[command](inputs);
+        await commands[command](inputs, cli.flags);
     } else {
         console.log(`Unknown command: ${command}`);
     }
