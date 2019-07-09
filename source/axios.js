@@ -2,11 +2,7 @@ import axios from 'axios';
 import config from './config';
 
 axios.interceptors.request.use(request => {
-    let apiClientId = process.env.IMGUR_CLIENT_ID;
-    if (!apiClientId) {
-        apiClientId = config.DEFAULT_API_CLIENT_ID;
-    }
-    request.headers.Authorization = `Client-ID ${apiClientId}`;
+    request.headers.Authorization = `Client-ID ${config.API_CLIENT_ID}`;
     return request;
 });
 
