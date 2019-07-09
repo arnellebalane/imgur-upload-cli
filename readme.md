@@ -46,6 +46,16 @@ $ imgur-upload --help
     -d, --delete    Delete local image files after they get uploaded
 ```
 
+### Rate limits
+
+Note there are some [rate limits][limits] with the API.
+The daily upload limit is shared by everyone using the same client ID,
+so if you're using the provided one and start to get errors,
+you might consider using your own client ID, which can be set using an environment variable:
+
+`export IMGUR_CLIENT_ID=xxxxxxxxxxxxxxxx`
+
+[limits]: https://api.imgur.com/#limits
 
 ## License
 
